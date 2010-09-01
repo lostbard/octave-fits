@@ -1,0 +1,6 @@
+On Debian Lenny, pkgconfig does not work because of a missing file
+in the fitsio library. You can solve this by replacing the
+MKOCT_FLAGS = $(shell pkg-config --libs cfitsio) with
+MKOCT_FLAGS = -lcfitsio
+in src/Makefile
+
