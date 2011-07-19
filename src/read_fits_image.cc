@@ -110,7 +110,7 @@ Copyright (c) 2009-2010, Dirk Schmidt <fs@@dirk-schmidt.net>\
     dims = dim_vector( sz_axes[0], sz_axes[1] );
   else
     dims = dim_vector( sz_axes[0], sz_axes[1], sz_axes[2] );
-  MArrayN<double> image_data( dims ); // a octace double-type array
+  MArray<double> image_data( dims ); // a octace double-type array
 
   int type = TDOUBLE; // convert read data to double (done by libcfitsio)
   long fpixel[3] = {1,1,1}; // start at first pixel in all axes
