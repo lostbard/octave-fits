@@ -11,7 +11,7 @@ static bool any_bad_argument( const octave_value_list& args );
 
 DEFUN_DLD( save_fits_image, args, nargout,
 "-*- texinfo -*-\n\
-     @deftypefn {Function File}  save_fits_image(@var{filename}, @var{image}, @var{bit_per_pixel})\n\
+     @deftypefn {Loadable Function}  save_fits_image(@var{filename}, @var{image}, @var{bit_per_pixel})\n\
      Write @var{IMAGE} to FITS file @var{filename}.\n\n\
      Datacubes will be saved with NAXIS=3.\n\n\
      The optional parameter @var{bit_per_pixel} specifies the data type of the pixel values. Accepted string values are BYTE_IMG, SHORT_IMG, LONG_IMG, LONGLONG_IMG, FLOAT_IMG, and DOUBLE_IMG (default). Alternatively, corresponding numbers may be passed, i.e. 8, 16, 32, 64, -32, and -64.\n\n\

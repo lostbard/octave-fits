@@ -19,7 +19,7 @@ static bool any_bad_argument( const octave_value_list& args );
 
 DEFUN_DLD( read_fits_image, args, nargout,
 "-*- texinfo -*-\n\
-@deftypefn {Function File} {[@var{image},@var{header}]} = read_fits_image(@var{filename},@var{hdu})\n\
+@deftypefn {Loadable Function} {[@var{image},@var{header}]} = read_fits_image(@var{filename},@var{hdu})\n\
 Read FITS file @var{filename} and return image data in @var{image}, and the image header in @var{header}.\n\
 \n\
 @var{filename} can be concatenated with filters provided by libcfitsio. See:\
