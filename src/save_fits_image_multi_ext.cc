@@ -1,3 +1,19 @@
+// Copyright (C) 2009-2012 Dirk Schmidt <fs@dirk-schmidt.net>
+//
+// This program is free software; you can redistribute it and/or modify it under
+// the terms of the GNU General Public License as published by the Free Software
+// Foundation; either version 3 of the License, or (at your option) any later
+// version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+// details.
+//
+// You should have received a copy of the GNU General Public License along with
+// this program; if not, see <http://www.gnu.org/licenses/>.
+
+
 #include <iostream>
 #include <sstream>
 #include <octave/oct.h>
@@ -11,14 +27,14 @@ static bool any_bad_argument( const octave_value_list& args );
 
 DEFUN_DLD( save_fits_image_multi_ext, args, nargout,
 "-*- texinfo -*-\n\
-     @deftypefn {Loadable Function}  save_fits_image_multi_ext(@var{filename}, @var{image}, @var{bit_per_pixel})\n\
+     @deftypefn {Function File}  save_fits_image_multi_ext(@var{filename}, @var{image}, @var{bit_per_pixel})\n\
      Write @var{IMAGE} to FITS file @var{filename}.\n\n\
      Datacubes will be saved as multi-image extensions.\n\n\
      The optional parameter @var{bit_per_pixel} specifies the data type of the pixel values. Accepted string values are BYTE_IMG, SHORT_IMG, LONG_IMG, LONGLONG_IMG, FLOAT_IMG, and DOUBLE_IMG (default). Alternatively, corresponding numbers may be passed, i.e. 8, 16, 32, 64, -32, and -64.\n\n\
      Use a preceding exclamation mark (!) in the filename to overwirte an existing file.\n\n\
      Lossless file compression can be used by adding the suffix '.gz' to the filename.\n\n\
      @seealso{save_fits_image, read_fits_image}\
-     Copyright (c) 2009-2010, Dirk Schmidt <fs@@dirk-schmidt.net>\
+     Copyright (c) 2009-2012, Dirk Schmidt <fs@@dirk-schmidt.net>\
      @end deftypefn")
 {
   if ( any_bad_argument(args) )

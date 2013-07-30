@@ -1,14 +1,22 @@
-/*
- *
- * To install, execute
- * $ mkoctfile -lcfitsio read_fits_image.cc
- * and copy read_fits_image.oct to a directory which is read by octave.
- *
- * This program is licensed under the terms of the GNU General Public License version 2.
- */
+// Copyright (C) 2009-2012 Dirk Schmidt <fs@dirk-schmidt.net>
+//
+// This program is free software; you can redistribute it and/or modify it under
+// the terms of the GNU General Public License as published by the Free Software
+// Foundation; either version 3 of the License, or (at your option) any later
+// version.
+//
+// This program is distributed in the hope that it will be useful, but WITHOUT
+// ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+// FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+// details.
+//
+// You should have received a copy of the GNU General Public License along with
+// this program; if not, see <http://www.gnu.org/licenses/>.
+
 #include <iostream>
 #include <sstream>
 #include <octave/oct.h>
+#include <octave/version.h>
 
 extern "C"
 {
@@ -19,8 +27,10 @@ static bool any_bad_argument( const octave_value_list& args );
 
 DEFUN_DLD( read_fits_image, args, nargout,
 "-*- texinfo -*-\n\
-@deftypefn {Loadable Function} {[@var{image},@var{header}]} = read_fits_image(@var{filename},@var{hdu})\n\
+@deftypefn {Function File} {[@var{image},@var{header}]} = read_fits_image(@var{filename},@var{hdu})\n\
 Read FITS file @var{filename} and return image data in @var{image}, and the image header in @var{header}.\n\
+\n\
+size(@var{image}) will return NAXIS1 NAXIS2 ... NAXISN.\n\
 \n\
 @var{filename} can be concatenated with filters provided by libcfitsio. See:\
 <http://heasarc.gsfc.nasa.gov/docs/software/fitsio/c/c_user/node81.html>\
@@ -37,8 +47,8 @@ Examples:\n\
 \n\
 NOTE: It's only possible to read one extension (HDU) at a time, i.e. multi-extension files need to be read in a loop.\n\
 \n\
-@seealso{save_fits_image, save_fits_image_multi_ext}\
-Copyright (c) 2009-2010, Dirk Schmidt <fs@@dirk-schmidt.net>\
+@seealso{save_fits_image, save_fits_image_multi_ext}\n\
+Copyright (c) 2009-2013, Dirk Schmidt <fs@@dirk-schmidt.net>\
 @end deftypefn")
 {
   if ( any_bad_argument(args) )
@@ -68,9 +78,9 @@ Copyright (c) 2009-2010, Dirk Schmidt <fs@@dirk-schmidt.net>\
 
   // Gather informations about the image
   int bits_per_pixel, num_axis;
-  long int sz_axes[3];
-  memset( sz_axes, 0, sizeof(sz_axes) );
-  if( fits_get_img_param( fp, 3, &bits_per_pixel, &num_axis, sz_axes, &status) > 0 )
+  int const MAXDIM=999; // max number supported by FITS standard
+  std::vector<long> sz_axes(MAXDIM,0);
+  if( fits_get_img_param( fp, sz_axes.size(), &bits_per_pixel, &num_axis, sz_axes.data(), &status) > 0 )
   {
       fprintf( stderr, "Could not get image information.\n" );
       fits_report_error( stderr, status );
@@ -78,12 +88,19 @@ Copyright (c) 2009-2010, Dirk Schmidt <fs@@dirk-schmidt.net>\
   }
   if( 2 == num_axis )
     sz_axes[2] = 1;
+  if( 1 == num_axis )
+    sz_axes[1] = 1;
 
-  //std::cerr << bits_per_pixel << " " << num_axis << " " << sz_axes[0] << " " << sz_axes[1] << " " << sz_axes[2] << std::endl;
+  #ifdef DEBUG
+  std::cerr << bits_per_pixel << " " << num_axis << " ";
+  for( int i=0; i<num_axis; i++ )
+    std::cerr << sz_axes[i] << " ";
+  std::cerr << std::endl;  
+  #endif
 
   // Read image header
   int num_keys, key_pos;
-  char card[FLEN_CARD];   /* standard string lengths defined in fitsioc.h */
+  char card[FLEN_CARD];   // standard string lengths defined in fitsioc.h
   string_vector header;
   if( fits_get_hdrpos( fp, &num_keys, &key_pos, &status) > 0 ) // get number of keywords
   {
@@ -105,17 +122,31 @@ Copyright (c) 2009-2010, Dirk Schmidt <fs@@dirk-schmidt.net>\
   header.append( std::string("END\n") );  /* terminate listing with END */
 
   // Read image data and write it to an octave MArrayN type
-  dim_vector dims;
-  if( 2 == num_axis )
-    dims = dim_vector( sz_axes[0], sz_axes[1] );
-  else
-    dims = dim_vector( sz_axes[0], sz_axes[1], sz_axes[2] );
-  MArray<double> image_data( dims ); // a octace double-type array
+  dim_vector dims(1,1);
+  dims.resize( num_axis );
+  int read_sz=sz_axes[0];
+  for( int i=0; i<num_axis; i++ )
+  {
+    dims(i) = sz_axes[i];
+    #ifdef DEBUG
+      std::cerr << i << " " << sz_axes[i]  << std::endl;
+    #endif
+    if(i>0)
+      read_sz *= sz_axes[i];
+  }
+  //std::cerr << "read_sz: " << read_sz << std::endl;
+
+  #if OCTAVE_API_VERSION_NUMBER >= 45 
+    MArray<double> image_data( dims ); // a octace double-type array
+  #else
+    MArrayN<double> image_data( dims ); // a octave double-type array
+  #endif
 
   int type = TDOUBLE; // convert read data to double (done by libcfitsio)
-  long fpixel[3] = {1,1,1}; // start at first pixel in all axes
+  std::vector<long> fpixel(num_axis,1); // start at first pixel in all axes
+
   int  anynul;
-  if( fits_read_pix( fp, type, fpixel, sz_axes[0]*sz_axes[1]*sz_axes[2], NULL, image_data.fortran_vec(),
+  if( fits_read_pix( fp, type, fpixel.data(), read_sz, NULL, image_data.fortran_vec(), 
                       &anynul, &status ) > 0 )
   {
        fprintf( stderr, "Could not read image.\n" );

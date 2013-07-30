@@ -1,7 +1,0 @@
-#! /bin/sh -f
-
-if [ -e src/configure ]; then
-  cd src
-  ./configure $*
-fi
-
