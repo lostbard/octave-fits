@@ -1,4 +1,4 @@
-// Copyright (C) 2009-2012 Dirk Schmidt <fs@dirk-schmidt.net>
+// Copyright (C) 2009-2014 Dirk Schmidt <fs@dirk-schmidt.net>
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -34,7 +34,7 @@ DEFUN_DLD( save_fits_image_multi_ext, args, nargout,
      Use a preceding exclamation mark (!) in the filename to overwirte an existing file.\n\n\
      Lossless file compression can be used by adding the suffix '.gz' to the filename.\n\n\
      @seealso{save_fits_image, read_fits_image}\
-     Copyright (c) 2009-2012, Dirk Schmidt <fs@@dirk-schmidt.net>\
+     Copyright (c) 2009-2014, Dirk Schmidt <fs@@dirk-schmidt.net>\
      @end deftypefn")
 {
   if ( any_bad_argument(args) )
@@ -44,7 +44,7 @@ DEFUN_DLD( save_fits_image_multi_ext, args, nargout,
   std::string outfile = args(0).string_value ();
 
   int num_axis = 2;
-  NDArray image = args(1).array_value();
+  const NDArray image = args(1).array_value();
   long int sz_axes[2]; 
   sz_axes[0] = image.dim1();
   sz_axes[1] = image.dim2();
@@ -137,7 +137,8 @@ DEFUN_DLD( save_fits_image_multi_ext, args, nargout,
       fits_report_error( stderr, status );
       return octave_value_list();
     }
-    if( fits_write_img( fp, TDOUBLE, fpixel, sz_axes[0]*sz_axes[1], image.fortran_vec() + i*sz_axes[0]*sz_axes[1], &status ) > 0 )
+    double * datap = const_cast<double*>( image.fortran_vec() );
+    if( fits_write_img( fp, TDOUBLE, fpixel, sz_axes[0]*sz_axes[1], datap + i*sz_axes[0]*sz_axes[1], &status ) > 0 )
     {
       fprintf( stderr, "Could not write image data.\n" );
       fits_report_error( stderr, status );

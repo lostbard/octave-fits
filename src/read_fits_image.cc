@@ -1,4 +1,4 @@
-// Copyright (C) 2009-2012 Dirk Schmidt <fs@dirk-schmidt.net>
+// Copyright (C) 2009-2014 Dirk Schmidt <fs@dirk-schmidt.net>
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -48,7 +48,7 @@ Examples:\n\
 NOTE: It's only possible to read one extension (HDU) at a time, i.e. multi-extension files need to be read in a loop.\n\
 \n\
 @seealso{save_fits_image, save_fits_image_multi_ext}\n\
-Copyright (c) 2009-2013, Dirk Schmidt <fs@@dirk-schmidt.net>\
+Copyright (c) 2009-2014, Dirk Schmidt <fs@@dirk-schmidt.net>\
 @end deftypefn")
 {
   if ( any_bad_argument(args) )
@@ -136,10 +136,14 @@ Copyright (c) 2009-2013, Dirk Schmidt <fs@@dirk-schmidt.net>\
   }
   //std::cerr << "read_sz: " << read_sz << std::endl;
 
-  #if OCTAVE_API_VERSION_NUMBER >= 45 
-    MArray<double> image_data( dims ); // a octace double-type array
+  #ifdef OCTAVE_API_VERSION_NUMBER
+    #if OCTAVE_API_VERSION_NUMBER < 45
+      MArrayN<double> image_data( dims ); // a octave double-type array
+    #else
+      MArray<double> image_data( dims ); // a octace double-type array
+    #endif
   #else
-    MArrayN<double> image_data( dims ); // a octave double-type array
+    MArray<double> image_data( dims ); // a octace double-type array
   #endif
 
   int type = TDOUBLE; // convert read data to double (done by libcfitsio)

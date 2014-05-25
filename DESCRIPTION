@@ -1,6 +1,6 @@
 Name: FITS
-Version: 1.0.3
-Date: 2013-07-03
+Version: 1.0.5
+Date: 2014-04-26
 Author: Dirk Schmidt
 Maintainer: Dirk Schmidt
 Title: Reading and writing FITS (Flexible Image Transport System) files.
