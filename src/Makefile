@@ -1,4 +1,4 @@
-MKOCT_FLAGS = $(shell pkg-config --libs cfitsio)
+MKOCT_FLAGS = $(shell pkg-config --libs cfitsio --cflags cfitsio)
 
 all: read_fits_image.oct save_fits_image.oct save_fits_image_multi_ext.oct
 
