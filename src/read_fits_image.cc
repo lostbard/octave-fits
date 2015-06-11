@@ -1,4 +1,4 @@
-// Copyright (C) 2009-2014 Dirk Schmidt <fs@dirk-schmidt.net>
+// Copyright (C) 2009-2015 Dirk Schmidt <fs@dirk-schmidt.net>
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -48,7 +48,7 @@ Examples:\n\
 NOTE: It's only possible to read one extension (HDU) at a time, i.e. multi-extension files need to be read in a loop.\n\
 \n\
 @seealso{save_fits_image, save_fits_image_multi_ext}\n\
-Copyright (c) 2009-2014, Dirk Schmidt <fs@@dirk-schmidt.net>\
+Copyright (c) 2009-2015, Dirk Schmidt <fs@@dirk-schmidt.net>\
 @end deftypefn")
 {
   if ( any_bad_argument(args) )
@@ -190,13 +190,13 @@ static bool any_bad_argument( const octave_value_list& args )
   {
     if( !args(1).is_scalar_type() )
     {
-      error( "read_fits_image: second argument must be a positive scalar integer value" );
+      error( "read_fits_image: second argument must be a non-negative scalar integer value" );
       return true;
     }
     double val = args(1).double_value();
-    if( (D_NINT( val ) !=  val) || (val < 1) )
+    if( (D_NINT( val ) !=  val) || (val < 0) )
     {
-      error( "read_fits_image: second argument must be a positive scalar integer value" );
+      error( "read_fits_image: second argument must be a non-negative scalar integer value" );
       return true;
     }
 

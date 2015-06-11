@@ -1,4 +1,4 @@
-// Copyright (C) 2009-2014 Dirk Schmidt <fs@dirk-schmidt.net>
+// Copyright (C) 2009-2015 Dirk Schmidt <fs@dirk-schmidt.net>
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -34,7 +34,7 @@ DEFUN_DLD( save_fits_image_multi_ext, args, nargout,
      Use a preceding exclamation mark (!) in the filename to overwirte an existing file.\n\n\
      Lossless file compression can be used by adding the suffix '.gz' to the filename.\n\n\
      @seealso{save_fits_image, read_fits_image}\
-     Copyright (c) 2009-2014, Dirk Schmidt <fs@@dirk-schmidt.net>\
+     Copyright (c) 2009-2015, Dirk Schmidt <fs@@dirk-schmidt.net>\
      @end deftypefn")
 {
   if ( any_bad_argument(args) )

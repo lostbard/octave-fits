@@ -1,3 +1,11 @@
+Version 1.0.7, released 2015-06-10:
+===================================
+ * Allow for extension in read_fits_image( filename, extension ) being zero to read the 
+   first image of a file with multiple extension.
+   read_fits_image( filename, 0 ) is equivalent to read_fits_image( filename ) and
+   read_fits_image( filename[0] ).
+
+ 
 Version 1.0.6, released 2014-06-10:
 ===================================
  * Get cflags from pkg-config for compilation. No changes in module sources.
