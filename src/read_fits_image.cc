@@ -18,6 +18,10 @@
 #include <octave/oct.h>
 #include <octave/version.h>
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 extern "C"
 {
 #include "fitsio.h"
@@ -194,7 +198,7 @@ static bool any_bad_argument( const octave_value_list& args )
       return true;
     }
     double val = args(1).double_value();
-    if( (D_NINT( val ) !=  val) || (val < 0) )
+    if( (OCTAVE__D_NINT( val ) !=  val) || (val < 0) )
     {
       error( "read_fits_image: second argument must be a non-negative scalar integer value" );
       return true;

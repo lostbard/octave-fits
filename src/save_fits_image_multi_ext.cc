@@ -18,6 +18,10 @@
 #include <sstream>
 #include <octave/oct.h>
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 extern "C"
 {
 #include "fitsio.h"
@@ -78,7 +82,7 @@ DEFUN_DLD( save_fits_image_multi_ext, args, nargout,
     else if( args(2).is_scalar_type() )
     {
       double val = args(2).double_value();
-      if( (D_NINT( val ) ==  val) )
+      if( (OCTAVE__D_NINT( val ) ==  val) )
       {
         if( BYTE_IMG == val )
           bitperpixel = BYTE_IMG;
