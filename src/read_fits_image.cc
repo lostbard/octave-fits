@@ -43,7 +43,7 @@ Examples:\n\
 \n\
 1. If the file contains a single image, read_fits_image( \"filename\" ) will store the data into a 2d double matrix.\n\
 \n\
-2. If the file contains a data cube (continous data, no exentions!), read_fits_image( \"filename\" ) will store the whole data cube into a 3d array.\n\
+2. If the file contains a data cube (continuous data, no extensions!), read_fits_image( \"filename\" ) will store the whole data cube into a 3d array.\n\
 \n\
 3. If the file contains a data cube, then read_fits_image( \"filename[*,*,2:5]\" ) will read the 2nd, 3rd, 4th, and 5th image, and store them into a 3d array.\n\
 \n\
@@ -51,8 +51,7 @@ Examples:\n\
 \n\
 NOTE: It's only possible to read one extension (HDU) at a time, i.e. multi-extension files need to be read in a loop.\n\
 \n\
-@seealso{save_fits_image, save_fits_image_multi_ext}\n\
-Copyright (c) 2009-2015, Dirk Schmidt <fs@@dirk-schmidt.net>\
+@seealso{save_fits_image, save_fits_image_multi_ext}\n \
 @end deftypefn")
 {
   if ( any_bad_argument(args) )
@@ -80,7 +79,7 @@ Copyright (c) 2009-2015, Dirk Schmidt <fs@@dirk-schmidt.net>\
       return fitsimage = -1;
   }
 
-  // Gather informations about the image
+  // Gather information about the image
   int bits_per_pixel, num_axis;
   int const MAXDIM=999; // max number supported by FITS standard
   std::vector<long> sz_axes(MAXDIM,0);
@@ -144,10 +143,10 @@ Copyright (c) 2009-2015, Dirk Schmidt <fs@@dirk-schmidt.net>\
     #if OCTAVE_API_VERSION_NUMBER < 45
       MArrayN<double> image_data( dims ); // a octave double-type array
     #else
-      MArray<double> image_data( dims ); // a octace double-type array
+      MArray<double> image_data( dims ); // a octave double-type array
     #endif
   #else
-    MArray<double> image_data( dims ); // a octace double-type array
+    MArray<double> image_data( dims ); // a octave double-type array
   #endif
 
   int type = TDOUBLE; // convert read data to double (done by libcfitsio)
