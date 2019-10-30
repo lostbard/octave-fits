@@ -1,4 +1,5 @@
 MKOCTFILE := @MKOCTFILE@
+GREP ?= @GREP@
 CXXFLAGS  := @CXXFLAGS@ @FITSIO_CXXFLAGS@ @DEFS@
 LIBS      := @LIBS@ @FITSIO_LIBS@
 LDFLAGS   := @LDFLAGS@
@@ -8,14 +9,28 @@ SRC := read_fits_image.cc save_fits_image.cc \
 
 OBJ := $(SRC:.cc=.o)
 
+CC_TST_SOURCES := $(shell $(GREP) --files-with-matches '^%!' $(SRC))
+TST_SOURCES := $(patsubst %.cc,../inst/test/%.cc-tst,$(CC_TST_SOURCES))
+
+
+
 all: read_fits_image.oct save_fits_image.oct save_fits_image_multi_ext.oct \
-	fitsinfo.oct
+	fitsinfo.oct $(TST_SOURCES)
 
 %.o: %.cc
 	$(MKOCTFILE) -c $< $(CXXFLAGS)
 
 %.oct: %.o
 	$(MKOCTFILE) -o $@ $(LDFLAGS) $(LIBS) $<
+
+../inst/test:
+	@mkdir -p "$@"
+
+$(TST_SOURCES): ../inst/test/%.cc-tst: %.cc | ../inst/test
+	@echo "Extracting tests from $< ..."
+	@$(RM) -f "$@" "$@-t"
+	@(      echo "## Generated from $<"; \
+	        $(GREP) '^%!' "$<") > "$@"
 
 .PHONY: clean
 .PHONY: distclean
