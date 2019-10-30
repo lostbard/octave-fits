@@ -3,4 +3,5 @@ Reading and writing FITS files
  read_fits_image
  save_fits_image
  save_fits_image_multi_ext
+ fitsinfo
 

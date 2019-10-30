@@ -3,11 +3,13 @@ CXXFLAGS  := @CXXFLAGS@ @FITSIO_CXXFLAGS@ @DEFS@
 LIBS      := @LIBS@ @FITSIO_LIBS@
 LDFLAGS   := @LDFLAGS@
 
-SRC := read_fits_image.cc save_fits_image.cc save_fits_image_multi_ext.cc
+SRC := read_fits_image.cc save_fits_image.cc \
+ save_fits_image_multi_ext.cc fitsinfo.cc
 
 OBJ := $(SRC:.cc=.o)
 
-all: read_fits_image.oct save_fits_image.oct save_fits_image_multi_ext.oct
+all: read_fits_image.oct save_fits_image.oct save_fits_image_multi_ext.oct \
+	fitsinfo.oct
 
 %.o: %.cc
 	$(MKOCTFILE) -c $< $(CXXFLAGS)
