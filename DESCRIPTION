@@ -1,8 +1,8 @@
 Name: FITS
 Version: 1.0.7
 Date: 2015-06-10
-Author: Dirk Schmidt
-Maintainer: Dirk Schmidt
+Author: Dirk Schmidt, John Donoghue
+Maintainer: John Donoghue <john.donoghue@ieee.org>
 Title: Reading and writing FITS (Flexible Image Transport System) files.
 Description: The Octave-FITS package provides functions for
  reading and writing FITS (Flexible Image Transport System) files. 
