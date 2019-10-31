@@ -1,4 +1,5 @@
 // Copyright (C) 2009-2015 Dirk Schmidt <fs@dirk-schmidt.net>
+// Copyright (C) 2019 John Donoghue <john.donoghue@ieee.org>
 //
 // This program is free software; you can redistribute it and/or modify it under
 // the terms of the GNU General Public License as published by the Free Software
@@ -40,6 +41,8 @@ DEFUN_DLD( save_fits_image_multi_ext, args, nargout,
      @seealso{save_fits_image, read_fits_image}\n\
      @end deftypefn")
 {
+  bool verbose = false;
+
   if ( any_bad_argument(args) )
     return octave_value_list();
 
@@ -51,9 +54,15 @@ DEFUN_DLD( save_fits_image_multi_ext, args, nargout,
   long int sz_axes[2]; 
   sz_axes[0] = image.dim1();
   sz_axes[1] = image.dim2();
-  int num_images = image.dim3();
 
-  //std::cerr << "num_images " <<  num_images << std::endl;
+  int num_images;
+  if (image.ndims() < 3)
+    num_images = 1;
+  else
+    num_images = image.dim3();
+
+  if(verbose)
+    std::cerr << "num_images " <<  num_images << std::endl;
 
   int bitperpixel = DOUBLE_IMG;
   if( 3 == args.length() )
@@ -74,7 +83,7 @@ DEFUN_DLD( save_fits_image_multi_ext, args, nargout,
         bitperpixel = DOUBLE_IMG;
       else
       {
-        fprintf( stderr, "Invalid string value for 'bit_per_pixel': %s\n", args(2).string_value().c_str() );
+        error ("Invalid string value for 'bit_per_pixel': %s", args(2).string_value().c_str() );
         return octave_value_list();
       }
     }
@@ -97,14 +106,14 @@ DEFUN_DLD( save_fits_image_multi_ext, args, nargout,
           bitperpixel = DOUBLE_IMG;
         else
         {
-          fprintf( stderr, "Invalid numeric value for 'bit_per_pixel': %f\n", val );
+          error ("Invalid numeric value for 'bit_per_pixel': %f", val );
           return octave_value_list();
         }
       }
     }
     else
     {
-      fprintf( stderr, "Third parameter must be a valid string or a valid scalar value.\nSee 'help save_fits_image' for valid values.\n" );
+      error ("Third parameter must be a valid string or a valid scalar value.\nSee 'help save_fits_image' for valid values." );
       return octave_value_list();
     }
   }
@@ -116,19 +125,20 @@ DEFUN_DLD( save_fits_image_multi_ext, args, nargout,
   fitsfile *fp;
   if ( fits_create_file( &fp, outfile.c_str(), &status) > 0 )
   {
-      fprintf( stderr, "Could not open file %s.\n", outfile.c_str() );
       fits_report_error( stderr, status );
+      error ("Could not open file %s.", outfile.c_str() );
       return fitsimage = -1;
   }
 
   long fpixel = 1;
   for( int i=0; i<num_images; i++ )
   {
-    std::cerr << "image: " << i << std::endl;
+    if(verbose)
+      std::cerr << "image: " << i << std::endl;
     if( fits_create_img( fp, bitperpixel, num_axis, sz_axes, &status ) > 0 )
     {
-      fprintf( stderr, "Could not create HDU.\n" );
       fits_report_error( stderr, status );
+      error ("Could not create HDU." );
       return octave_value_list();
     }
     char keyname[9] = "XTENSION";
@@ -136,24 +146,25 @@ DEFUN_DLD( save_fits_image_multi_ext, args, nargout,
     char comment[16] = "IMAGE extension";
     if( fits_write_key_str( fp, keyname, value, comment, &status ) > 0 )
     {
-      fprintf( stderr, "Could not write XTENSION to HDU.\n" );
       fits_report_error( stderr, status );
+      error ("Could not write XTENSION to HDU." );
       return octave_value_list();
     }
     double * datap = const_cast<double*>( image.fortran_vec() );
     if( fits_write_img( fp, TDOUBLE, fpixel, sz_axes[0]*sz_axes[1], datap + i*sz_axes[0]*sz_axes[1], &status ) > 0 )
     {
-      fprintf( stderr, "Could not write image data.\n" );
       fits_report_error( stderr, status );
+      error ("Could not write image data." );
       return octave_value_list();
     }
   }
 
   // Close FITS file
+  status = 0;
   if( fits_close_file(fp, &status) > 0 )
   {
-      fprintf( stderr, "Could not close file %s.\n", outfile.c_str() );
       fits_report_error( stderr, status );
+      error("Could not close file %s.", outfile.c_str() );
   }
 
   return octave_value_list();
@@ -186,12 +197,12 @@ static bool any_bad_argument( const octave_value_list& args )
 
 %!test
 %! testfile = tempname();
-%! data = [ 1, 2, 3; 4,5,6; 1, 7, 11 ];
-%! save_fits_image_multi_ext(testfile, data)
+%! data = [ 1, 2, 3; 4, 5, 6; 1, 7, 11 ];
+%! save_fits_image_multi_ext(testfile, data);
 %! rd=read_fits_image(testfile);
-%! size(rd)
 %! assert(size(rd, 1), 3);
 %! assert(size(rd, 2), 3);
+%! assert(size(rd, 3), 1);
 %! assert(data, rd)
 %! if exist (testfile, 'file')
 %!   delete (testfile);
@@ -217,6 +228,21 @@ static bool any_bad_argument( const octave_value_list& args )
 %! assert(size(rd, 1), 3);
 %! assert(size(rd, 2), 3);
 %! assert(data, rd)
+%! if exist (testfile, 'file')
+%!   delete (testfile);
+%! endif
+
+%!test
+%! testfile = tempname();
+%! im0 = [ 1, 2, 3; 4, 5, 6; 1, 7, 11 ];
+%! data = resize(im0, [size(im0), 4]);
+%! save_fits_image_multi_ext(testfile, data);
+%! rd=read_fits_image(testfile);
+%! assert(size(rd, 1), 3);
+%! assert(size(rd, 2), 3);
+%! assert(im0, rd)
+%! rd=read_fits_image(testfile, 3);
+%! assert(zeros(3,3), rd)
 %! if exist (testfile, 'file')
 %!   delete (testfile);
 %! endif
