@@ -3,6 +3,8 @@ Version 1.0.7+, released 2019-XX-XX:
 
  * Use configure to check for octave version specific function calls
 
+ * add/install BIST tests
+
 Version 1.0.7, released 2015-06-10:
 ===================================
  * Allow for extension in read_fits_image( filename, extension ) being zero to read the 

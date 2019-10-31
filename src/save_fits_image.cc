@@ -168,3 +168,27 @@ static bool any_bad_argument( const octave_value_list& args )
 
   return false;
 }
+
+#if 0
+%!shared testfile
+%! testfile = tempname();
+
+%!error <save_fits_image: number of arguments> save_fits_image()
+
+%!error <save_fits_image: number of arguments> save_fits_image(1)
+
+%!error <save_fits_image: filename> save_fits_image(1,1)
+
+%!test
+%! data = [ 1, 2, 3; 4,5,6; 1, 7, 11 ];
+%! save_fits_image(testfile, data);
+%! rd=read_fits_image(testfile);
+%! assert(size(rd, 1), 3);
+%! assert(size(rd, 2), 3);
+%! assert(data, rd)
+
+%! if exist (testfile, 'file')
+%!   delete (testfile);
+%! endif
+#endif
+

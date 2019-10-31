@@ -207,3 +207,37 @@ static bool any_bad_argument( const octave_value_list& args )
 
   return false;
 }
+
+#if 0
+%!shared testfile
+%! # WFPC II 800 x 800 x 4 primary array data cube containing the 4 CCD images,
+%! # plus a table extension containing world coordinate parameters.
+%! # The sample file has been trimmed to 200 x 200 x 4 pixels to save disk space
+%! testfile = urlwrite ( ...
+%!   'https://fits.gsfc.nasa.gov/samples/WFPC2u5780205r_c0fx.fits', ...
+%!   tempname() );
+
+%!error <read_fits_image: number of arguments> read_fits_image()
+
+%!error <read_fits_image: filename> read_fits_image(1)
+
+%!test
+%! rd=read_fits_image(testfile);
+%! assert(!isempty(rd));
+%! assert(numel(size(rd)), 3);
+%! assert(size(rd, 1), 200);
+%! assert(size(rd, 2), 200);
+%! assert(size(rd, 3), 4);
+
+%!test
+%! rd=read_fits_image(sprintf("%s[0]", testfile));
+%! assert(!isempty(rd));
+%! assert(size(rd, 1), 200);
+%! assert(size(rd, 2), 200);
+%! assert(size(rd, 3), 4);
+
+%! if exist (testfile, 'file')
+%!   delete (testfile);
+%! endif
+#endif
+
