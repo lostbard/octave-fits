@@ -5,6 +5,8 @@ Version 1.0.7+, released 2019-XX-XX:
 
  * add/install BIST tests
 
+ * add low level fits interface
+
 Version 1.0.7, released 2015-06-10:
 ===================================
  * Allow for extension in read_fits_image( filename, extension ) being zero to read the 

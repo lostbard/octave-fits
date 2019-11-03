@@ -4,7 +4,7 @@ CXXFLAGS  := @CXXFLAGS@ @FITSIO_CXXFLAGS@ @DEFS@
 LIBS      := @LIBS@ @FITSIO_LIBS@
 LDFLAGS   := @LDFLAGS@
 
-SRC := read_fits_image.cc save_fits_image.cc \
+SRC := read_fits_image.cc save_fits_image.cc __fits__.cc \
  save_fits_image_multi_ext.cc fitsinfo.cc
 
 OBJ := $(SRC:.cc=.o)
@@ -15,7 +15,7 @@ TST_SOURCES := $(patsubst %.cc,../inst/test/%.cc-tst,$(CC_TST_SOURCES))
 
 
 all: read_fits_image.oct save_fits_image.oct save_fits_image_multi_ext.oct \
-	fitsinfo.oct $(TST_SOURCES)
+	fitsinfo.oct __fits__.oct $(TST_SOURCES)
 
 %.o: %.cc
 	$(MKOCTFILE) -c $< $(CXXFLAGS)
